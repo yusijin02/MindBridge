@@ -194,6 +194,7 @@ def cal_metrics(results_path, device):
 
     gt = eff_model(preprocess(all_images))['avgpool']
     gt = gt.reshape(len(gt),-1).cpu().numpy()
+    torch.cuda.empty_cache()
     fake = eff_model(preprocess(all_brain_recons))['avgpool']
     fake = fake.reshape(len(fake),-1).cpu().numpy()
 
@@ -219,6 +220,7 @@ def cal_metrics(results_path, device):
 
     gt = swav_model(preprocess(all_images))['avgpool']
     gt = gt.reshape(len(gt),-1).cpu().numpy()
+    torch.cuda.empty_cache()
     fake = swav_model(preprocess(all_brain_recons))['avgpool']
     fake = fake.reshape(len(fake),-1).cpu().numpy()
 

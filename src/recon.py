@@ -1,4 +1,7 @@
 import os
+
+os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
@@ -64,8 +67,8 @@ def prepare_VD(args, device):
     except:
         print("Downloading Versatile Diffusion to", args.vd_cache_dir)
         vd_pipe =  VersatileDiffusionDualGuidedPipeline.from_pretrained(
-                "shi-labs/versatile-diffusion",
-                cache_dir = args.vd_cache_dir)
+                "shi-labs/versatile-diffusion",)
+                # cache_dir = args.vd_cache_dir)
 
     vd_pipe.image_unet.eval().to(device)
     vd_pipe.vae.eval().to(device)

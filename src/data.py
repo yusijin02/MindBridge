@@ -97,7 +97,7 @@ class NSDDataset(Dataset):
             elif ext == "nsdgeneral.npy":
                 voxel = self._load_npy(sample[ext])
                 items.append(self.vox_process(voxel))
-            elif ext == "coco73k.npy":
+            elif ext ==  "coco73k.npy":
                 items.append(self._load_npy(sample[ext]))
             elif ext == "subj":
                 items.append(self.subj_process(sample[ext]))

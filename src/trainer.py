@@ -12,7 +12,8 @@ torch.backends.cuda.matmul.allow_tf32 = True
 
 # Custom models and functions #
 import utils
-import data
+# import data
+import data_ours as data
 
 class Trainer:
     def __init__(self, args, accelerator, voxel2clip, clip_extractor, prompts_list, device) -> None:
@@ -551,19 +552,22 @@ class Trainer_bridge(Trainer):
             
             # ensemble data from multiple subjects
             voxel_list, image_list, coco_list, subj_id_list = [], [], [], []
-            for voxel, image, coco, subj_id in datas:
-                voxel_list.append(voxel[:,repeat_index,...])
-                image_list.append(image)
-                coco_list.append(coco)
-                subj_id_list.append(subj_id[[0],...])
+            captions = []
+            for data in datas:
+                voxel_list.append(data["fmri"][:,repeat_index,...])
+                image_list.append(data["image"])
+                # coco_list.append(coco)
+                captions += data["text"]
+                subj_id_list.append(data["subj"])
             voxel = torch.cat(voxel_list, dim=0)
             image = torch.cat(image_list, dim=0)
-            coco = torch.cat(coco_list, dim=0)
+            image = torch.nn.functional.interpolate(image, size=(256, 256), mode='bilinear', align_corners=False)
+            # coco = torch.cat(coco_list, dim=0)
             subj_id = torch.cat(subj_id_list, dim=0)
 
-            coco_ids = coco.squeeze().tolist()
-            current_prompts_list = [self.prompts_list[coco_id] for coco_id in coco_ids]
-            captions = [prompts[repeat_index]['caption'] for prompts in current_prompts_list]
+            # coco_ids = coco.squeeze().tolist()
+            # current_prompts_list = [self.prompts_list[coco_id] for coco_id in coco_ids]
+            # captions = [prompts[repeat_index]['caption'] for prompts in current_prompts_list]
 
             print(">>> Epoch{} | Iter{} | voxel: {}".format(epoch, train_i, voxel.shape), flush=True)
             self.train_step(voxel, image, captions, subj_id)
@@ -577,19 +581,18 @@ class Trainer_bridge(Trainer):
 
             # ensemble data from multiple subjects
             voxel_list, image_list, coco_list, subj_id_list = [], [], [], []
-            for voxel, image, coco, subj_id in datas:
-                voxel_list.append(torch.mean(voxel,axis=1))
-                image_list.append(image)
-                coco_list.append(coco)
-                subj_id_list.append(subj_id[[0],...])
+            captions = []
+            for data in datas:
+                voxel_list.append(data["fmri"][:,repeat_index,...])
+                image_list.append(data["image"])
+                # coco_list.append(coco)
+                captions += data["text"]
+                subj_id_list.append(data["subj"])
             voxel = torch.cat(voxel_list, dim=0)
             image = torch.cat(image_list, dim=0)
-            coco = torch.cat(coco_list, dim=0)
+            image = torch.nn.functional.interpolate(image, size=(256, 256), mode='bilinear', align_corners=False)
+            # coco = torch.cat(coco_list, dim=0)
             subj_id = torch.cat(subj_id_list, dim=0)
-
-            coco_ids = coco.squeeze().tolist()
-            current_prompts_list = [self.prompts_list[coco_id] for coco_id in coco_ids]
-            captions = [prompts[repeat_index]['caption'] for prompts in current_prompts_list]
 
             print(">>> Epoch{} | Eval{} | voxel: {}".format(epoch, val_i, voxel.shape), flush=True)
             self.eval_step(voxel, image, captions, subj_id)

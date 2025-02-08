@@ -1,10 +1,10 @@
 subj_load=1
 subj_test=1
-model_name="mindbridge_subj125"
+model_name="mindbridge_subj1257"
 ckpt_from="last"
 text_image_ratio=0.5
 guidance=5
-gpu_id=0
+gpu_id=1
 
 cd src/
 
@@ -14,9 +14,10 @@ recon.py \
 --h_size 2048 --n_blocks 4 --pool_type max \
 --subj_load $subj_load --subj_test $subj_test \
 --text_image_ratio $text_image_ratio --guidance $guidance \
---recons_per_sample 8 
-# --test_end 2 \
-# --test_start 0 \
+--recons_per_sample 8 --data_path /home/yusijin/datasets/nsd/previous/natural-scenes-dataset
+
+--test_end 2 \
+--test_start 0 \
 
 
 results_path="../train_logs/"$model_name"/recon_on_subj"$subj_test

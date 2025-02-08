@@ -1,4 +1,8 @@
 import os
+
+os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+os.environ["WANDB_MODE"] = "offline"
+
 import sys
 import torch
 from accelerate import Accelerator, DeepSpeedPlugin
@@ -16,7 +20,7 @@ import utils
 def config_multi_gpu():
     # Multi-GPU config
     deepspeed_plugin = DeepSpeedPlugin(zero_stage=2, gradient_clipping=1.0)
-    accelerator = Accelerator(split_batches=False, mixed_precision='no', deepspeed_plugin=deepspeed_plugin)  
+    accelerator = Accelerator(split_batches=True, mixed_precision='no', deepspeed_plugin=deepspeed_plugin)  
     accelerator.print("PID of this process =",os.getpid())
     device = accelerator.device
     accelerator.print("device:",device)
